@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat GPT</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style type="text/css">
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			margin: 0;
+			padding: 0;
+		}
+		h1 {
+			font-size: 2em;
+			text-align: center;
+			margin-top: 50px;
+			color: #333;
+		}
+		form {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-top: 50px;
+		}
+		input[type=text] {
+			padding: 10px;
+			border-radius: 5px;
+			border: none;
+			margin-bottom: 20px;
+			width: 80%;
+		}
+		input[type=submit] {
+			background-color: #333;
+			color: #fff;
+			padding: 10px 20px;
+			border-radius: 5px;
+			border: none;
+			cursor: pointer;
+		}
+		p {
+			font-size: 1.2em;
+			text-align: center;
+			margin-top: 50px;
+			color: #333;
+		}
+        .loading {
+            display: none; /* Ocultar el elemento por defecto */
+            text-align:center; /* Centrar el mensaje */
+            margin-top: 20px; /* Espacio entre el formulario y el mensaje */
+        }
+        .loading p {
+            font-size: 1.2em; /* Tamaño del texto */
+            color:#333; /* Color del texto */
+        }
+        .loading img {
+            width:50px; /* Tamaño de la imagen */
+            height:auto; /* Altura automática */
+        }
+        .loading1 {
+            display: none; /* Ocultar el elemento por defecto */
+            text-align:center; /* Centrar el mensaje */
+            margin-top: 20px; /* Espacio entre el formulario y el mensaje */
+        }
+        .loading1 p {
+            font-size: 1.2em; /* Tamaño del texto */
+            color:#333; /* Color del texto */
+        }
+        .loading1 img {
+            width:50px; /* Tamaño de la imagen */
+            height:auto; /* Altura automática */
+        }
+        .dalle{
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            align-items: center;
+        }
+        .dalle-class{
+            display: none;
+        }
+        .botondalle{
+    background-color: #333333;
+    padding: 10px;
+    border: 0px solid;
+    border-radius: 5px;
+    color: white;
+}
+	</style>
+</head>
+<body>
+    <h1>Chat GPT</h1>
+
+    <form onsubmit="return false;">
+      <label for="question">Haz una pregunta:</label><br>
+      <input type="text" id="question" name="question"><br>
+      <input type="submit" value="Enviar" onclick="getResponse()">
+    </form>
+
+    <div class="loading">
+        <img src="https://i.gifer.com/ZKZg.gif" alt="Cargando...">
+        <p>Procesando...</p>
+    </div>
+
+    <p id="response"></p>
+
+
+    <div class="dalle">
+        <h1>OpenAI DALL-E</h1>
+        <label for="prompt">Descripción:</label><br>
+        <input type="text" id="prompt" name="prompt"><br><br>
+        <button onclick="getDalleImage()" class="botondalle">Generar imagen</button>
+        <div class="loading1">
+            <img src="https://i.gifer.com/ZKZg.gif" alt="Cargando...">
+            <p>Procesando...</p>
+        </div>
+        <img id="dalle-image" class="dalle-class" src="" alt="DALL-E Image"></div>
+
+
+<script type="text/javascript">
+function getResponse() {
+  var question = document.getElementById("question").value;
+
+  // Mostrar el mensaje de carga
+  document.querySelector(".loading").style.display = "block";
+
+  fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer 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"
+    },
+    body: JSON.stringify({
+      model:"gpt-3.5-turbo",
+      messages:[{
+        role:"user",
+        content:`"Responde como si fueras un militar muy exigente y no mas de 10 palabras:"+${question}`
+      }]
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    var answer = data.choices[0].message.content;
+
+    // Ocultar el mensaje de carga
+    document.querySelector(".loading").style.display = "none";
+
+    document.getElementById("response").innerHTML = answer;
+  })
+  .catch(error => console.log(error));
+}
+
+function getDalleImage() {
+  var prompt = document.getElementById("prompt").value;
+
+  // Mostrar el mensaje de carga
+  document.querySelector(".loading1").style.display = "block";
+  fetch("https://api.openai.com/v1/images/generations", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer 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"
+    },
+    body: JSON.stringify({
+      model:"image-alpha-001",
+      prompt:prompt,
+      num_images:1,
+      size:"512x512",
+      response_format:"url"
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    var image_url = data.data[0].url;
+
+    // Ocultar el mensaje de carga
+    document.querySelector(".loading1").style.display = "none";
+    document.querySelector(".dalle-class").style.display = "block"
+    document.getElementById("dalle-image").src = image_url;
+  })
+  .catch(error => console.log(error));
+}
+</script>
+
+</script>
+
+</body>
+</html>
